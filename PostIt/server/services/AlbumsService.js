@@ -4,16 +4,17 @@ import { BadRequest, Forbidden } from "../utils/Errors"
 
 
 
-class AlbumsService{
-  
-  async getAll() {
-    const albums = await dbContext.Albums.find()
+class AlbumsService {
+
+
+  async getAll(query = {}) {
+    const albums = await dbContext.Albums.find(query)
     return albums
   }
 
   async getById(id) {
     const album = await dbContext.Albums.findById(id).populate('creator', 'name picture')
-    if(!album){
+    if (!album) {
       throw new BadRequest('invalid id')
     }
     return album
@@ -26,7 +27,7 @@ class AlbumsService{
 
   async update(update) {
     const original = await this.getById(update.id)
-    if(original.creatorId.toString() != update.creatorId){
+    if (original.creatorId.toString() != update.creatorId) {
       throw new Forbidden('not your album')
     }
     original.name = update.name || original.name
@@ -38,7 +39,7 @@ class AlbumsService{
 
   async delete(albumId, userId) {
     const album = await this.getById(albumId)
-    if(album.creatorId.toString() != userId){
+    if (album.creatorId.toString() != userId) {
       throw new Forbidden('not your album to delete')
     }
     await album.remove()

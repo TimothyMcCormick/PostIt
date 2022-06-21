@@ -1,4 +1,5 @@
 import { Auth0Provider } from "@bcwdev/auth0provider";
+import { albumMembersService } from "../services/AlbumMembersService";
 import { albumsService } from "../services/AlbumsService";
 import { picturesService } from "../services/PicturesService";
 import BaseController from "../utils/BaseController";
@@ -6,18 +7,20 @@ import BaseController from "../utils/BaseController";
 
 
 
-export class AlbumsController extends BaseController{
-  
-  constructor(){
+export class AlbumsController extends BaseController {
+
+  constructor() {
     super('api/albums')
     this.router
-    .get('', this.getAll)
-    .get('/:id', this.getById)
-    .get('/:id/pictures', this.getPictures)
-    .use(Auth0Provider.getAuthorizedUserInfo)
-    .post('', this.create)
-    .put('/:id', this.edit)
-    .delete('/:id', this.remove)
+      .get('', this.getAll)
+      .get('/:id', this.getById)
+      .get('/:id/pictures', this.getPictures)
+      .get('/:id/albumMembers', this.getAlbumMembers)
+      .use(Auth0Provider.getAuthorizedUserInfo)
+      .get('')
+      .post('', this.create)
+      .put('/:id', this.edit)
+      .delete('/:id', this.remove)
   }
   async getAll(req, res, next) {
     try {
@@ -31,6 +34,15 @@ export class AlbumsController extends BaseController{
     try {
       const album = await albumsService.getById(req.params.id)
       return res.send(album)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async getAlbumMembers(req, res, next) {
+    try {
+      const albums = await albumMembersService.getAll(req.params.id)
+      return res.send(albums)
     } catch (error) {
       next(error)
     }
@@ -57,7 +69,7 @@ export class AlbumsController extends BaseController{
   async remove(req, res, next) {
     try {
       await albumsService.delete(req.params.id, req.userInfo.id)
-      return res.send({message: 'deleted album'})
+      return res.send({ message: 'deleted album' })
     } catch (error) {
       next(error)
     }

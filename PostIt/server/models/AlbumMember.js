@@ -7,7 +7,6 @@ const ObjectId = Schema.Types.ObjectId
 export const AlbumMemberSchema = new Schema({
   accountId: {type: ObjectId, required: true, ref: 'Account'},
   albumId: {type: ObjectId, required: true, ref: 'Album'},
-  pictureId: {type: ObjectId, required: true, ref: 'Picture'}
 }, 
 { timestamps: true, toJSON: { virtuals: true } }
 )
@@ -27,9 +26,3 @@ AlbumMemberSchema.virtual('album', {
   ref: 'Album'
 })
 
-AlbumMemberSchema.virtual('picture', {
-  localField: 'pictureId',
-  foreignField: '_id',
-  justOne: true,
-  ref: 'Picture'
-})
